@@ -565,7 +565,7 @@ func initCategoryMap() {
 
 func getCategoryMapById(id int) (Category, bool) {
 	log.Print(categoryMap)
-	if categoryMap == nil {
+	if len(categoryMap) == 0 {
 		initCategoryMap()
 	}
 
