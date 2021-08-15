@@ -1137,7 +1137,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			CreatedAt:   transaction.ICreatedAt.Unix(),
 		}
 
-		if transaction.IBuyerID != 0 {
+		if transaction.IBuyerID.Valid && transaction.IBuyerID.Int64 != 0 {
 			buyer := UserSimple{}
 			buyer.AccountName = transaction.BAccountName
 			buyer.ID = transaction.BID
@@ -1147,7 +1147,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			// 	tx.Rollback()
 			// 	return
 			// }
-			itemDetail.BuyerID = transaction.IBuyerID
+			itemDetail.BuyerID = transaction.IBuyerID.Int64
 			itemDetail.Buyer = &buyer
 		}
 
