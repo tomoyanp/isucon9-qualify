@@ -114,22 +114,10 @@ type Transactions struct {
 	IBuyerID     sql.NullInt64 `db:"i_buyer_id"`
 	IDescription string        `db:"i_description"`
 
-	TID     int64  `db:"t_id"`
-	TStatus string `db:"t_status"`
+	TID     sql.NullInt64  `db:"t_id"`
+	TStatus sql.NullString `db:"t_status"`
 
-	STransactionEvidenceID int64     `db:"s_transaction_evidence_id"`
-	SStatus                string    `db:"s_status"`
-	SItemName              string    `db:"s_item_name"`
-	SItemID                int64     `db:"s_item_id"`
-	SReserveID             string    `db:"s_reserve_id"`
-	SReserveTime           int64     `db:"s_reserve_time"`
-	SToAddress             string    `db:"s_to_address"`
-	SToName                string    `db:"s_to_name"`
-	SFromAddress           string    `db:"s_from_address"`
-	SFromName              string    `db:"s_from_name"`
-	SImgBinary             []byte    `db:"s_img_binary"`
-	SCreatedAt             time.Time `db:"s_created_at"`
-	SUpdatedAt             time.Time `db:"s_updated_at"`
+	SReserveID string `db:"s_reserve_id"`
 }
 
 type UserSimple struct {
@@ -1056,7 +1044,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	baseQuery := "SELECT users.id as u_id, users.account_name as u_account_name, users.num_sell_items as u_num_sell_items, items.id as i_id, items.seller_id as i_seller_id, items.status as i_status, items.name as i_name, items.price as i_price, items.image_name as i_image_name, items.category_id as i_category_id, items.created_at as i_created_at, items.description as i_description, items.buyer_id as i_buyer_id, buyer.id as b_id, buyer.account_name as b_account_name, buyer.num_sell_items as b_num_sell_items, transaction_evidences.id as t_id, transaction_evidences.status as t_status, shippings.transaction_evidence_id as s_transaction_evidence_id, shippings.status as s_status, shippings.item_name as s_item_name, shippings.item_id as s_item_id, shippings.reserve_id as s_reserve_id, shippings.reserve_time as s_reserve_time, shippings.to_address as s_to_address, shippings.to_name as s_to_name, shippings.from_address as s_from_address, shippings.from_name as s_from_name, shippings.img_binary as s_img_binary, shippings.created_at as s_created_at, shippings.updated_at as s_updated_at FROM items LEFT JOIN users ON items.seller_id = users.id LEFT JOIN transaction_evidences ON items.id = transaction_evidences.item_id LEFT JOIN shippings ON transaction_evidences.id = shippings.transaction_evidence_id LEFT JOIN (SELECT users.id, users.account_name, users.num_sell_items FROM items LEFT JOIN users ON items.buyer_id = users.id) AS buyer ON buyer.id = items.buyer_id "
+	baseQuery := "SELECT users.id as u_id, users.account_name as u_account_name, users.num_sell_items as u_num_sell_items, items.id as i_id, items.seller_id as i_seller_id, items.status as i_status, items.name as i_name, items.price as i_price, items.image_name as i_image_name, items.category_id as i_category_id, items.created_at as i_created_at, items.description as i_description, items.buyer_id as i_buyer_id, buyer.id as b_id, buyer.account_name as b_account_name, buyer.num_sell_items as b_num_sell_items, transaction_evidences.id as t_id, transaction_evidences.status as t_status, shippings.reserve_id as s_reserve_id FROM items LEFT JOIN users ON items.seller_id = users.id LEFT JOIN transaction_evidences ON items.id = transaction_evidences.item_id LEFT JOIN shippings ON transaction_evidences.id = shippings.transaction_evidence_id LEFT JOIN (SELECT users.id, users.account_name, users.num_sell_items FROM items LEFT JOIN users ON items.buyer_id = users.id) AS buyer ON buyer.id = items.buyer_id "
 
 	tx := dbx.MustBegin()
 	transactions := []Transactions{}
@@ -1151,24 +1139,9 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			itemDetail.Buyer = &buyer
 		}
 
-		if transaction.TID > 0 {
-			shipping := Shipping{}
-			shipping.TransactionEvidenceID = transaction.STransactionEvidenceID
-			shipping.Status = transaction.SStatus
-			shipping.ItemName = transaction.SItemName
-			shipping.ItemID = transaction.SItemID
-			shipping.ReserveID = transaction.SReserveID
-			shipping.ReserveTime = transaction.SReserveTime
-			shipping.ToAddress = transaction.SToAddress
-			shipping.ToName = transaction.SToName
-			shipping.FromAddress = transaction.SFromAddress
-			shipping.FromName = transaction.SFromName
-			shipping.ImgBinary = transaction.SImgBinary
-			shipping.CreatedAt = transaction.SCreatedAt
-			shipping.UpdatedAt = transaction.SUpdatedAt
-
+		if transaction.TID.Valid && transaction.TID.Int64 > 0 {
 			ssr, err := APIShipmentStatus(getShipmentServiceURL(), &APIShipmentStatusReq{
-				ReserveID: shipping.ReserveID,
+				ReserveID: transaction.SReserveID,
 			})
 			if err != nil {
 				log.Print(err)
@@ -1177,8 +1150,8 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			itemDetail.TransactionEvidenceID = transaction.TID
-			itemDetail.TransactionEvidenceStatus = transaction.TStatus
+			itemDetail.TransactionEvidenceID = transaction.TID.Int64
+			itemDetail.TransactionEvidenceStatus = transaction.TStatus.String
 			itemDetail.ShippingStatus = ssr.Status
 		}
 
