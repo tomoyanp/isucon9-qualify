@@ -103,16 +103,16 @@ type Transactions struct {
 	BAccountName  string `json:"account_name" db:"b_account_name"`
 	BNumSellItems int    `json:"num_sell_items" db:"b_num_sell_items"`
 
-	IID          int64     `json:"id" db:"i_id"`
-	ISellerID    int64     `json:"seller_id" db:"i_seller_id"`
-	IStatus      string    `json:"status" db:"i_status"`
-	IName        string    `json:"name" db:"i_name"`
-	IPrice       int       `json:"price" db:"i_price"`
-	IImageName   string    `json:"image_name" db:"i_image_name"`
-	ICategoryID  int       `json:"category_id" db:"i_category_id"`
-	ICreatedAt   time.Time `json:"-" db:"i_created_at"`
-	IBuyerID     int64     `json:"buyer_id" db:"i_buyer_id"`
-	IDescription string    `json:"description" db:"i_description"`
+	IID          int64         `json:"id" db:"i_id"`
+	ISellerID    int64         `json:"seller_id" db:"i_seller_id"`
+	IStatus      string        `json:"status" db:"i_status"`
+	IName        string        `json:"name" db:"i_name"`
+	IPrice       int           `json:"price" db:"i_price"`
+	IImageName   string        `json:"image_name" db:"i_image_name"`
+	ICategoryID  int           `json:"category_id" db:"i_category_id"`
+	ICreatedAt   time.Time     `json:"-" db:"i_created_at"`
+	IBuyerID     sql.NullInt64 `json:"buyer_id" db:"i_buyer_id"`
+	IDescription string        `json:"description" db:"i_description"`
 
 	TID     int64  `json:"id" db:"t_id"`
 	TStatus string `json:"status" db:"t_status"`
