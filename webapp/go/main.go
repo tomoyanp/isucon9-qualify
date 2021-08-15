@@ -117,7 +117,7 @@ type Transactions struct {
 	TID     sql.NullInt64  `db:"t_id"`
 	TStatus sql.NullString `db:"t_status"`
 
-	SReserveID string `db:"s_reserve_id"`
+	SReserveID sql.NullString `db:"s_reserve_id"`
 }
 
 type UserSimple struct {
@@ -1141,7 +1141,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 
 		if transaction.TID.Valid && transaction.TID.Int64 > 0 {
 			ssr, err := APIShipmentStatus(getShipmentServiceURL(), &APIShipmentStatusReq{
-				ReserveID: transaction.SReserveID,
+				ReserveID: transaction.SReserveID.String,
 			})
 			if err != nil {
 				log.Print(err)
