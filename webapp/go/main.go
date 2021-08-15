@@ -1228,8 +1228,8 @@ func getItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	category, err := getCategoryByID(dbx, item.CategoryID)
-	if err != nil {
+	category, flag := getCategoryMapById(item.CategoryID)
+	if !flag {
 		outputErrorMsg(w, http.StatusNotFound, "category not found")
 		return
 	}
@@ -1516,8 +1516,8 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	category, err := getCategoryByID(tx, targetItem.CategoryID)
-	if err != nil {
+	category, flag := getCategoryMapById(targetItem.CategoryID)
+	if !flag {
 		log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "category id error")
@@ -2114,8 +2114,8 @@ func postSell(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	category, err := getCategoryByID(dbx, categoryID)
-	if err != nil || category.ParentID == 0 {
+	category, flag := getCategoryMapById(categoryID)
+	if !flag || category.ParentID == 0 {
 		log.Print(categoryID, category)
 		outputErrorMsg(w, http.StatusBadRequest, "Incorrect category ID")
 		return
