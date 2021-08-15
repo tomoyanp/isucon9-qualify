@@ -95,41 +95,41 @@ type UserItem struct {
 }
 
 type Transactions struct {
-	UID           int64  `json:"id" db:"u_id"`
-	UAccountName  string `json:"account_name" db:"u_account_name"`
-	UNumSellItems int    `json:"num_sell_items" db:"u_num_sell_items"`
+	UID           int64  `db:"u_id"`
+	UAccountName  string `db:"u_account_name"`
+	UNumSellItems int    `db:"u_num_sell_items"`
 
-	BID           int64  `json:"id" db:"b_id"`
-	BAccountName  string `json:"account_name" db:"b_account_name"`
-	BNumSellItems int    `json:"num_sell_items" db:"b_num_sell_items"`
+	BID           int64  `db:"b_id"`
+	BAccountName  string `db:"b_account_name"`
+	BNumSellItems int    `db:"b_num_sell_items"`
 
-	IID          int64         `json:"id" db:"i_id"`
-	ISellerID    int64         `json:"seller_id" db:"i_seller_id"`
-	IStatus      string        `json:"status" db:"i_status"`
-	IName        string        `json:"name" db:"i_name"`
-	IPrice       int           `json:"price" db:"i_price"`
-	IImageName   string        `json:"image_name" db:"i_image_name"`
-	ICategoryID  int           `json:"category_id" db:"i_category_id"`
-	ICreatedAt   time.Time     `json:"-" db:"i_created_at"`
-	IBuyerID     sql.NullInt64 `json:"buyer_id" db:"i_buyer_id"`
-	IDescription string        `json:"description" db:"i_description"`
+	IID          int64         `db:"i_id"`
+	ISellerID    int64         `db:"i_seller_id"`
+	IStatus      string        `db:"i_status"`
+	IName        string        `db:"i_name"`
+	IPrice       int           `db:"i_price"`
+	IImageName   string        `db:"i_image_name"`
+	ICategoryID  int           `db:"i_category_id"`
+	ICreatedAt   time.Time     `db:"i_created_at"`
+	IBuyerID     sql.NullInt64 `db:"i_buyer_id"`
+	IDescription string        `db:"i_description"`
 
-	TID     int64  `json:"id" db:"t_id"`
-	TStatus string `json:"status" db:"t_status"`
+	TID     int64  `db:"t_id"`
+	TStatus string `db:"t_status"`
 
-	STransactionEvidenceID int64     `json:"transaction_evidence_id" db:"s_transaction_evidence_id"`
-	SStatus                string    `json:"status" db:"s_status"`
-	SItemName              string    `json:"item_name" db:"s_item_name"`
-	SItemID                int64     `json:"item_id" db:"s_item_id"`
-	SReserveID             string    `json:"reserve_id" db:"s_reserve_id"`
-	SReserveTime           int64     `json:"reserve_time" db:"s_reserve_time"`
-	SToAddress             string    `json:"to_address" db:"s_to_address"`
-	SToName                string    `json:"to_name" db:"s_to_name"`
-	SFromAddress           string    `json:"from_address" db:"s_from_address"`
-	SFromName              string    `json:"from_name" db:"s_from_name"`
-	SImgBinary             []byte    `json:"-" db:"s_img_binary"`
-	SCreatedAt             time.Time `json:"-" db:"s_created_at"`
-	SUpdatedAt             time.Time `json:"-" db:"s_updated_at"`
+	STransactionEvidenceID int64     `db:"s_transaction_evidence_id"`
+	SStatus                string    `db:"s_status"`
+	SItemName              string    `db:"s_item_name"`
+	SItemID                int64     `db:"s_item_id"`
+	SReserveID             string    `db:"s_reserve_id"`
+	SReserveTime           int64     `db:"s_reserve_time"`
+	SToAddress             string    `db:"s_to_address"`
+	SToName                string    `db:"s_to_name"`
+	SFromAddress           string    `db:"s_from_address"`
+	SFromName              string    `db:"s_from_name"`
+	SImgBinary             []byte    `db:"s_img_binary"`
+	SCreatedAt             time.Time `db:"s_created_at"`
+	SUpdatedAt             time.Time `db:"s_updated_at"`
 }
 
 type UserSimple struct {
