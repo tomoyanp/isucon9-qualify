@@ -99,9 +99,9 @@ type Transactions struct {
 	UAccountName  string `db:"u_account_name"`
 	UNumSellItems int    `db:"u_num_sell_items"`
 
-	BID           int64  `db:"b_id"`
-	BAccountName  string `db:"b_account_name"`
-	BNumSellItems int    `db:"b_num_sell_items"`
+	BID           sql.NullInt64  `db:"b_id"`
+	BAccountName  sql.NullString `db:"b_account_name"`
+	BNumSellItems sql.NullInt64  `db:"b_num_sell_items"`
 
 	IID          int64         `db:"i_id"`
 	ISellerID    int64         `db:"i_seller_id"`
@@ -331,10 +331,10 @@ func init() {
 		"../public/index.html",
 	))
 
-	cmd := exec.Command("../sql/init.sh")
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stderr
-	cmd.Run()
+	// cmd := exec.Command("../sql/init.sh")
+	// cmd.Stderr = os.Stderr
+	// cmd.Stdout = os.Stderr
+	// cmd.Run()
 }
 
 func main() {
@@ -1139,9 +1139,9 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 
 		if transaction.IBuyerID.Valid && transaction.IBuyerID.Int64 != 0 {
 			buyer := UserSimple{}
-			buyer.AccountName = transaction.BAccountName
-			buyer.ID = transaction.BID
-			buyer.NumSellItems = transaction.BNumSellItems
+			buyer.AccountName = transaction.BAccountName.String
+			buyer.ID = transaction.BID.Int64
+			buyer.NumSellItems = int(transaction.BNumSellItems.Int64)
 			// if err != nil {
 			// 	outputErrorMsg(w, http.StatusNotFound, "buyer not found")
 			// 	tx.Rollback()
