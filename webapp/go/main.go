@@ -564,7 +564,6 @@ func initCategoryMap() {
 }
 
 func getCategoryMapById(id int) (Category, bool) {
-	log.Print(categoryMap)
 	if len(categoryMap) == 0 {
 		initCategoryMap()
 	}
@@ -1045,7 +1044,31 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	baseQuery := "SELECT users.id as u_id, users.account_name as u_account_name, users.num_sell_items as u_num_sell_items, items.id as i_id, items.seller_id as i_seller_id, items.status as i_status, items.name as i_name, items.price as i_price, items.image_name as i_image_name, items.category_id as i_category_id, items.created_at as i_created_at, items.description as i_description, items.buyer_id as i_buyer_id, buyer.id as b_id, buyer.account_name as b_account_name, buyer.num_sell_items as b_num_sell_items, transaction_evidences.id as t_id, transaction_evidences.status as t_status, shippings.reserve_id as s_reserve_id FROM items LEFT JOIN users ON items.seller_id = users.id LEFT JOIN transaction_evidences ON items.id = transaction_evidences.item_id LEFT JOIN shippings ON transaction_evidences.id = shippings.transaction_evidence_id LEFT JOIN (SELECT users.id, users.account_name, users.num_sell_items FROM items LEFT JOIN users ON items.buyer_id = users.id) AS buyer ON buyer.id = items.buyer_id "
+	baseQuery := `SELECT
+		users.id as u_id,
+		users.account_name as u_account_name,
+		users.num_sell_items as u_num_sell_items,
+		items.id as i_id,
+		items.seller_id as i_seller_id,
+		items.status as i_status,
+		items.name as i_name,
+		items.price as i_price,
+		items.image_name as i_image_name,
+		items.category_id as i_category_id,
+		items.created_at as i_created_at,
+		items.description as i_description,
+		items.buyer_id as i_buyer_id,
+		buyer.id as b_id,
+		buyer.account_name as b_account_name,
+		buyer.num_sell_items as b_num_sell_items,
+		transaction_evidences.id as t_id,
+		transaction_evidences.status as t_status,
+		shippings.reserve_id as s_reserve_id
+		FROM items
+		LEFT JOIN users ON items.seller_id = users.id
+		LEFT JOIN transaction_evidences ON items.id = transaction_evidences.item_id
+		LEFT JOIN shippings ON transaction_evidences.id = shippings.transaction_evidence_id
+		LEFT JOIN (SELECT users.id, users.account_name, users.num_sell_items FROM items LEFT JOIN users ON items.buyer_id = users.id) AS buyer ON buyer.id = items.buyer_id `
 
 	tx := dbx.MustBegin()
 	transactions := []Transactions{}
@@ -1171,9 +1194,10 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 		HasNext: hasNext,
 	}
 
+	log.Print(rts)
+
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
 	json.NewEncoder(w).Encode(rts)
-
 }
 
 func getItem(w http.ResponseWriter, r *http.Request) {
