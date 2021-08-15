@@ -1068,7 +1068,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 		LEFT JOIN users ON items.seller_id = users.id
 		LEFT JOIN transaction_evidences ON items.id = transaction_evidences.item_id
 		LEFT JOIN shippings ON transaction_evidences.id = shippings.transaction_evidence_id
-		LEFT JOIN (SELECT users.id, users.account_name, users.num_sell_items FROM items LEFT JOIN users ON items.buyer_id = users.id) AS buyer ON buyer.id = items.buyer_id `
+		LEFT JOIN (SELECT users.id, users.account_name, users.num_sell_items FROM items LEFT JOIN users ON items.buyer_id = users.id WHERE items.id = ?) AS buyer ON buyer.id = items.buyer_id `
 
 	tx := dbx.MustBegin()
 	transactions := []Transactions{}
@@ -1077,6 +1077,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 		baseQuery += "WHERE (items.seller_id = ? OR items.buyer_id = ?) AND items.status IN (?,?,?,?,?) AND (items.created_at < ?  OR (items.created_at <= ? AND items.id < ?)) ORDER BY items.created_at DESC, items.id DESC LIMIT ?"
 		err := tx.Select(&transactions,
 			baseQuery,
+			itemID,
 			user.ID,
 			user.ID,
 			ItemStatusOnSale,
@@ -1100,6 +1101,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 		baseQuery += "WHERE (items.seller_id = ? OR items.buyer_id = ?) AND items.status IN (?,?,?,?,?) ORDER BY items.created_at DESC, items.id DESC LIMIT ?"
 		err := tx.Select(&transactions,
 			baseQuery,
+			itemID,
 			user.ID,
 			user.ID,
 			ItemStatusOnSale,
