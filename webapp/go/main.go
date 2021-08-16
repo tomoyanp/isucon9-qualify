@@ -1154,6 +1154,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			shipping := Shipping{}
 			err := tx.Select(&shipping, query, transaction.SReserveID.String)
 			if err != nil {
+				log.Print(err)
 				outputErrorMsg(w, http.StatusNotFound, "shipping status not found")
 				tx.Rollback()
 				return
