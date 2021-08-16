@@ -1151,7 +1151,8 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 
 		if transaction.TID.Valid && transaction.TID.Int64 > 0 {
 			query := "SELECT status FROM shippings WHERE reserve_id = ?"
-			shipping := Shipping{}
+			shipping := []Shipping{}
+			log.Printf("****** shippings = %v *************", shipping)
 			err := tx.Select(&shipping, query, transaction.SReserveID.String)
 			if err != nil {
 				log.Print(err)
@@ -1162,7 +1163,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 
 			itemDetail.TransactionEvidenceID = transaction.TID.Int64
 			itemDetail.TransactionEvidenceStatus = transaction.TStatus.String
-			itemDetail.ShippingStatus = shipping.ReserveID
+			itemDetail.ShippingStatus = shipping[0].ReserveID
 		}
 
 		if transaction.IBuyerID.Valid && transaction.IBuyerID.Int64 != 0 {
