@@ -16,6 +16,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/garyburd/redigo/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
 	"github.com/jmoiron/sqlx"
@@ -319,6 +320,20 @@ func init() {
 	))
 }
 
+func redisConnection() redis.Conn {
+	host := "172.31.8.4"
+
+	c, err := redis.Dial("tcp", host, 1)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return c
+}
+
+var redisCon *redis.Conn
+
 func main() {
 	host := os.Getenv("MYSQL_HOST")
 	if host == "" {
@@ -361,6 +376,8 @@ func main() {
 	defer dbx.Close()
 
 	mux := goji.NewMux()
+
+	redisCon = redisConnection()
 
 	// API
 	mux.HandleFunc(pat.Post("/initialize"), postInitialize)
@@ -546,7 +563,7 @@ func postInitialize(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
-var categoryMap = map[int]Category{}
+// var categoryMap = map[int]Category{}
 var parentCategories = map[int][]int{}
 
 func initCategoryMap() {
@@ -558,24 +575,23 @@ func initCategoryMap() {
 
 	for _, category := range categories {
 		category, _ = getCategoryByIDInternal(dbx, category.ID)
-		categoryMap[category.ID] = category
+		redisCon.Do("SET", category.ID, json.Marshal(category))
 		parentCategories[category.ParentID] = append(parentCategories[category.ParentID], category.ID)
 	}
 }
 
 func getCategoryMapById(id int) (Category, bool) {
-	if categoryMap == nil || len(categoryMap) == 0 {
-		// log.Print("category Map is nil")
-		initCategoryMap()
+	data, _ := redisCon.Bytes(redisCon.Do("GET", id))
+	flag := false
+	deserialized := Category{}
+	if data != nil {
+		json.Unmarshal(data, deserialized)
 	}
-
-	category, flag := categoryMap[id]
-	return category, flag
+	return deserialized, flag
 }
 
 func getParentCategoryMapById(id int) ([]int, bool) {
-	if parentCategories == nil || len(categoryMap) == 0 {
-		// log.Print("parent category Map is nil")
+	if parentCategories == nil || len(parentCategories) == 0 {
 		initCategoryMap()
 	}
 
