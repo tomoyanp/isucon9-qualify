@@ -320,21 +320,33 @@ func init() {
 	))
 }
 
-func redisConnection() redis.Conn {
+func redisPoolCreate() {
 	host := "172.31.8.4:6379"
 	dbNo := 1
 	opt := redis.DialDatabase(dbNo)
 
-	c, err := redis.Dial("tcp", host, opt)
+	pool = &redis.Pool{
+		MaxIdle:     5,
+		IdleTimeout: 240 * time.Second,
 
-	if err != nil {
-		panic(err)
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", host, opt)
+			if err != nil {
+				return nil, err
+			}
+			return c, err
+		},
+
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			_, err := c.Do("PING")
+			return err
+		},
 	}
-
-	return c
 }
 
-var redisCon redis.Conn
+var (
+	pool *redis.Pool
+)
 
 func main() {
 	host := os.Getenv("MYSQL_HOST")
@@ -379,8 +391,7 @@ func main() {
 
 	mux := goji.NewMux()
 
-	redisCon = redisConnection()
-	defer redisCon.Close()
+	redisPoolCreate()
 
 	// API
 	mux.HandleFunc(pat.Post("/initialize"), postInitialize)
@@ -575,18 +586,21 @@ func initCategoryMap() {
 	query := "SELECT * FROM `categories`"
 	categories := []Category{}
 	dbx.Select(&categories, query)
+	con := pool.Get()
+	defer con.Close()
 
 	for _, category := range categories {
 		category, _ = getCategoryByIDInternal(dbx, category.ID)
 		serialized, _ := json.Marshal(category)
-		redisCon.Do("SET", category.ID, serialized)
+		con.Do("SET", category.ID, serialized)
 		parentCategories[category.ParentID] = append(parentCategories[category.ParentID], category.ID)
 	}
-	redisCon.Do("EXEC")
 }
 
 func getCategoryMapById(id int) (Category, bool) {
-	data, _ := redis.Bytes(redisCon.Do("GET", id))
+	con := pool.Get()
+	defer con.Close()
+	data, _ := redis.Bytes(con.Do("GET", id))
 	var flag = false
 	deserialized := Category{}
 	log.Printf("id = %v", id)
