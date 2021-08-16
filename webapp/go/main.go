@@ -1167,6 +1167,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 				itemDetail.TransactionEvidenceID = transaction.TID.Int64
 				itemDetail.TransactionEvidenceStatus = transaction.TStatus.String
 				itemDetail.ShippingStatus = ssr.Status
+				log.Printf("******* status = %v", ssr)
 			}()
 		}
 
