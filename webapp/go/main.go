@@ -581,7 +581,7 @@ func getParentCategoryMapById(id int) ([]int, bool) {
 	}
 
 	categories, flag := parentCategories[id]
-	return *categories, flag
+	return categories, flag
 }
 
 // func getNewItems(w http.ResponseWriter, r *http.Request) {
