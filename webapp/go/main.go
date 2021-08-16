@@ -118,7 +118,7 @@ type Transactions struct {
 	TID     sql.NullInt64  `db:"t_id"`
 	TStatus sql.NullString `db:"t_status"`
 
-	SReserveID sql.NullString `db:"s_reserve_id"`
+	SStatus sql.NullString `db:"s_status"`
 }
 
 type UserSimple struct {
@@ -1061,7 +1061,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 		buyer.num_sell_items as b_num_sell_items,
 		transaction_evidences.id as t_id,
 		transaction_evidences.status as t_status,
-		shippings.reserve_id as s_reserve_id
+		shippings.status as s_status
 		FROM items
 		LEFT JOIN users ON items.seller_id = users.id
 		LEFT JOIN transaction_evidences ON items.id = transaction_evidences.item_id
@@ -1150,20 +1150,9 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if transaction.TID.Valid && transaction.TID.Int64 > 0 {
-			query := "SELECT status FROM shippings WHERE reserve_id = ?"
-			shipping := []Shipping{}
-			log.Printf("****** shippings = %v *************", shipping)
-			err := tx.Select(&shipping, query, transaction.SReserveID.String)
-			if err != nil {
-				log.Print(err)
-				outputErrorMsg(w, http.StatusNotFound, "shipping status not found")
-				tx.Rollback()
-				return
-			}
-
 			itemDetail.TransactionEvidenceID = transaction.TID.Int64
 			itemDetail.TransactionEvidenceStatus = transaction.TStatus.String
-			itemDetail.ShippingStatus = shipping[0].ReserveID
+			itemDetail.ShippingStatus = transaction.SStatus.String
 		}
 
 		if transaction.IBuyerID.Valid && transaction.IBuyerID.Int64 != 0 {
