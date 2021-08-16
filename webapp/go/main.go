@@ -211,8 +211,6 @@ type Category struct {
 	ParentCategoryName string `json:"parent_category_name,omitempty" db:"-"`
 }
 
-var categoryMap = map[int]*Category{}
-
 type reqInitialize struct {
 	PaymentServiceURL  string `json:"payment_service_url"`
 	ShipmentServiceURL string `json:"shipment_service_url"`
@@ -548,6 +546,7 @@ func postInitialize(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
+var categoryMap = map[int]Category{}
 var parentCategories = map[int][]int{}
 
 func initCategoryMap() {
@@ -559,7 +558,7 @@ func initCategoryMap() {
 
 	for _, category := range categories {
 		category, _ = getCategoryByIDInternal(dbx, category.ID)
-		categoryMap[category.ID] = &category
+		categoryMap[category.ID] = category
 		parentCategories[category.ParentID] = append(parentCategories[category.ParentID], category.ID)
 	}
 }
@@ -571,7 +570,7 @@ func getCategoryMapById(id int) (Category, bool) {
 	}
 
 	category, flag := categoryMap[id]
-	return *category, flag
+	return category, flag
 }
 
 func getParentCategoryMapById(id int) ([]int, bool) {
