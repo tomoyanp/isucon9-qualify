@@ -551,8 +551,8 @@ func postInitialize(w http.ResponseWriter, r *http.Request) {
 var parentCategories = map[int][]int{}
 
 func initCategoryMap() {
-	categoryMap := make(map[int]*Category)
-	parentCategories := make(map[int][]int)
+	// categoryMap := make(map[int]*Category)
+	// parentCategories := make(map[int][]int)
 	query := "SELECT * FROM `categories`"
 	categories := []Category{}
 	dbx.Select(&categories, query)
