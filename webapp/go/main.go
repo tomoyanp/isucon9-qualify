@@ -1149,6 +1149,27 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			CreatedAt:   transaction.ICreatedAt.Unix(),
 		}
 
+		var wg sync.WaitGroup
+		if transaction.TID.Valid && transaction.TID.Int64 > 0 {
+			wg.Add(1)
+			func() {
+				defer wg.Done()
+				ssr, err := APIShipmentStatus(getShipmentServiceURL(), &APIShipmentStatusReq{
+					ReserveID: transaction.SReserveID.String,
+				})
+				if err != nil {
+					log.Print(err)
+					outputErrorMsg(w, http.StatusInternalServerError, "failed to request to shipment service")
+					tx.Rollback()
+					return
+				}
+
+				itemDetail.TransactionEvidenceID = transaction.TID.Int64
+				itemDetail.TransactionEvidenceStatus = transaction.TStatus.String
+				itemDetail.ShippingStatus = ssr.Status
+			}()
+		}
+
 		if transaction.IBuyerID.Valid && transaction.IBuyerID.Int64 != 0 {
 			buyer := UserSimple{}
 			buyer.AccountName = transaction.BAccountName.String
@@ -1163,22 +1184,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			itemDetail.Buyer = &buyer
 		}
 
-		if transaction.TID.Valid && transaction.TID.Int64 > 0 {
-			ssr, err := APIShipmentStatus(getShipmentServiceURL(), &APIShipmentStatusReq{
-				ReserveID: transaction.SReserveID.String,
-			})
-			if err != nil {
-				log.Print(err)
-				outputErrorMsg(w, http.StatusInternalServerError, "failed to request to shipment service")
-				tx.Rollback()
-				return
-			}
-
-			itemDetail.TransactionEvidenceID = transaction.TID.Int64
-			itemDetail.TransactionEvidenceStatus = transaction.TStatus.String
-			itemDetail.ShippingStatus = ssr.Status
-		}
-
+		wg.Wait()
 		itemDetails = append(itemDetails, itemDetail)
 	}
 	tx.Commit()
@@ -1641,6 +1647,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	wg.Wait()
 	tx.Commit()
 
 	w.Header().Set("Content-Type", "application/json;charset=utf-8")
