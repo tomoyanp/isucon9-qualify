@@ -318,11 +318,6 @@ func init() {
 	templates = template.Must(template.ParseFiles(
 		"../public/index.html",
 	))
-
-	// cmd := exec.Command("../sql/init.sh")
-	// cmd.Stderr = os.Stderr
-	// cmd.Stdout = os.Stderr
-	// cmd.Run()
 }
 
 func main() {
@@ -538,6 +533,8 @@ func postInitialize(w http.ResponseWriter, r *http.Request) {
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
+
+	initCategoryMap()
 
 	res := resInitialize{
 		// キャンペーン実施時には還元率の設定を返す。詳しくはマニュアルを参照のこと。
