@@ -565,7 +565,8 @@ func initCategoryMap() {
 }
 
 func getCategoryMapById(id int) (Category, bool) {
-	if len(categoryMap) == 0 {
+	if len(categoryMap) == 0 || categoryMap == nil {
+		log.Print("category Map is nil")
 		initCategoryMap()
 	}
 
@@ -574,7 +575,8 @@ func getCategoryMapById(id int) (Category, bool) {
 }
 
 func getParentCategoryMapById(id int) ([]int, bool) {
-	if parentCategories == nil {
+	if len(categoryMap) == 0 || parentCategories == nil {
+		log.Print("parent category Map is nil")
 		initCategoryMap()
 	}
 
