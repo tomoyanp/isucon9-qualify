@@ -1149,26 +1149,19 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			CreatedAt:   transaction.ICreatedAt.Unix(),
 		}
 
-		var wg sync.WaitGroup
 		if transaction.TID.Valid && transaction.TID.Int64 > 0 {
-			wg.Add(1)
-			func() {
-				defer wg.Done()
-				ssr, err := APIShipmentStatus(getShipmentServiceURL(), &APIShipmentStatusReq{
-					ReserveID: transaction.SReserveID.String,
-				})
-				if err != nil {
-					log.Print(err)
-					outputErrorMsg(w, http.StatusInternalServerError, "failed to request to shipment service")
-					tx.Rollback()
-					return
-				}
+			query := "SELECT status FROM shippings WHERE reserve_id = ?"
+			shipping := Shipping{}
+			err := tx.Select(&shipping, query, transaction.SReserveID.String)
+			if err != nil {
+				outputErrorMsg(w, http.StatusNotFound, "shipping status not found")
+				tx.Rollback()
+				return
+			}
 
-				itemDetail.TransactionEvidenceID = transaction.TID.Int64
-				itemDetail.TransactionEvidenceStatus = transaction.TStatus.String
-				itemDetail.ShippingStatus = ssr.Status
-				log.Printf("******* status = %v", ssr)
-			}()
+			itemDetail.TransactionEvidenceID = transaction.TID.Int64
+			itemDetail.TransactionEvidenceStatus = transaction.TStatus.String
+			itemDetail.ShippingStatus = shipping.ReserveID
 		}
 
 		if transaction.IBuyerID.Valid && transaction.IBuyerID.Int64 != 0 {
@@ -1185,7 +1178,6 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			itemDetail.Buyer = &buyer
 		}
 
-		wg.Wait()
 		itemDetails = append(itemDetails, itemDetail)
 	}
 	tx.Commit()
