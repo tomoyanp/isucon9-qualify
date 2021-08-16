@@ -548,7 +548,7 @@ func postInitialize(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
-var parentCategories = map[int]*[]int{}
+var parentCategories = map[int][]int{}
 
 func initCategoryMap() {
 	categoryMap := make(map[int]*Category)
