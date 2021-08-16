@@ -211,7 +211,7 @@ type Category struct {
 	ParentCategoryName string `json:"parent_category_name,omitempty" db:"-"`
 }
 
-var categoryMap = map[int]Category{}
+var categoryMap = map[int]*Category{}
 
 type reqInitialize struct {
 	PaymentServiceURL  string `json:"payment_service_url"`
@@ -548,15 +548,18 @@ func postInitialize(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
-var parentCategories = map[int][]int{}
+var parentCategories = map[int]*[]int{}
 
 func initCategoryMap() {
+	categoryMap := make(map[int]*Category)
+	parentCategories := make(map[int][]int)
 	query := "SELECT * FROM `categories`"
 	categories := []Category{}
 	dbx.Select(&categories, query)
 
 	for _, category := range categories {
-		categoryMap[category.ID], _ = getCategoryByIDInternal(dbx, category.ID)
+		category, _ = getCategoryByIDInternal(dbx, category.ID)
+		categoryMap[category.ID] = &category
 		parentCategories[category.ParentID] = append(parentCategories[category.ParentID], category.ID)
 	}
 }
@@ -567,7 +570,7 @@ func getCategoryMapById(id int) (Category, bool) {
 	}
 
 	category, flag := categoryMap[id]
-	return category, flag
+	return *category, flag
 }
 
 func getParentCategoryMapById(id int) ([]int, bool) {
@@ -576,7 +579,7 @@ func getParentCategoryMapById(id int) ([]int, bool) {
 	}
 
 	categories, flag := parentCategories[id]
-	return categories, flag
+	return *categories, flag
 }
 
 // func getNewItems(w http.ResponseWriter, r *http.Request) {
