@@ -429,7 +429,7 @@ func getUser(r *http.Request) (user User, errCode int, errMsg string) {
 		return user, http.StatusNotFound, "user not found"
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		return user, http.StatusInternalServerError, "db error"
 	}
 
@@ -468,7 +468,7 @@ func getConfigByName(name string) (string, error) {
 		return "", nil
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		return "", err
 	}
 	return config.Val, err
@@ -518,7 +518,7 @@ func postInitialize(w http.ResponseWriter, r *http.Request) {
 		ri.PaymentServiceURL,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
@@ -528,7 +528,7 @@ func postInitialize(w http.ResponseWriter, r *http.Request) {
 		ri.ShipmentServiceURL,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
@@ -565,7 +565,7 @@ func initCategoryMap() {
 
 func getCategoryMapById(id int) (Category, bool) {
 	if categoryMap == nil || len(categoryMap) == 0 {
-		log.Print("category Map is nil")
+		// log.Print("category Map is nil")
 		initCategoryMap()
 	}
 
@@ -575,7 +575,7 @@ func getCategoryMapById(id int) (Category, bool) {
 
 func getParentCategoryMapById(id int) ([]int, bool) {
 	if parentCategories == nil || len(categoryMap) == 0 {
-		log.Print("parent category Map is nil")
+		// log.Print("parent category Map is nil")
 		initCategoryMap()
 	}
 
@@ -619,7 +619,7 @@ func getParentCategoryMapById(id int) ([]int, bool) {
 // 			ItemsPerPage+1,
 // 		)
 // 		if err != nil {
-// 			log.Print(err)
+// 			// log.Print(err)
 // 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 // 			return
 // 		}
@@ -632,7 +632,7 @@ func getParentCategoryMapById(id int) ([]int, bool) {
 // 			ItemsPerPage+1,
 // 		)
 // 		if err != nil {
-// 			log.Print(err)
+// 			// log.Print(err)
 // 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 // 			return
 // 		}
@@ -717,7 +717,7 @@ func getNewItems(w http.ResponseWriter, r *http.Request) {
 			ItemsPerPage+1,
 		)
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 			return
 		}
@@ -731,7 +731,7 @@ func getNewItems(w http.ResponseWriter, r *http.Request) {
 			ItemsPerPage+1,
 		)
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 			return
 		}
@@ -834,7 +834,7 @@ func getNewCategoryItems(w http.ResponseWriter, r *http.Request) {
 			ItemsPerPage+1,
 		)
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 			return
 		}
@@ -849,7 +849,7 @@ func getNewCategoryItems(w http.ResponseWriter, r *http.Request) {
 			ItemsPerPage+1,
 		)
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 			return
 		}
@@ -859,7 +859,7 @@ func getNewCategoryItems(w http.ResponseWriter, r *http.Request) {
 	err = dbx.Select(&userItems, inQuery, inArgs...)
 
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
@@ -958,7 +958,7 @@ func getUserItems(w http.ResponseWriter, r *http.Request) {
 			ItemsPerPage+1,
 		)
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 			return
 		}
@@ -973,7 +973,7 @@ func getUserItems(w http.ResponseWriter, r *http.Request) {
 			ItemsPerPage+1,
 		)
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 			return
 		}
@@ -1093,7 +1093,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			TransactionsPerPage+1,
 		)
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 			tx.Rollback()
 			return
@@ -1114,7 +1114,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 			TransactionsPerPage+1,
 		)
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 			tx.Rollback()
 			return
@@ -1213,7 +1213,7 @@ func getItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
@@ -1262,7 +1262,7 @@ func getItem(w http.ResponseWriter, r *http.Request) {
 		err = dbx.Get(&transactionEvidence, "SELECT * FROM `transaction_evidences` WHERE `item_id` = ?", item.ID)
 		if err != nil && err != sql.ErrNoRows {
 			// It's able to ignore ErrNoRows
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "db error")
 			return
 		}
@@ -1275,7 +1275,7 @@ func getItem(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			if err != nil {
-				log.Print(err)
+				// log.Print(err)
 				outputErrorMsg(w, http.StatusInternalServerError, "db error")
 				return
 			}
@@ -1326,7 +1326,7 @@ func postItemEdit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
@@ -1340,7 +1340,7 @@ func postItemEdit(w http.ResponseWriter, r *http.Request) {
 	tx := dbx.MustBegin()
 	err = tx.Get(&targetItem, "SELECT * FROM `items` WHERE `id` = ? FOR UPDATE", itemID)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1359,7 +1359,7 @@ func postItemEdit(w http.ResponseWriter, r *http.Request) {
 		itemID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1368,7 +1368,7 @@ func postItemEdit(w http.ResponseWriter, r *http.Request) {
 
 	err = tx.Get(&targetItem, "SELECT * FROM `items` WHERE `id` = ?", itemID)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -1406,7 +1406,7 @@ func getQRCode(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
@@ -1472,7 +1472,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1499,7 +1499,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1508,7 +1508,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 
 	category, flag := getCategoryMapById(targetItem.CategoryID)
 	if !flag {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "category id error")
 		tx.Rollback()
@@ -1527,7 +1527,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 		category.ParentID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1536,7 +1536,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 
 	transactionEvidenceID, err := result.LastInsertId()
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1550,7 +1550,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 		targetItem.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1566,7 +1566,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 			FromName:    seller.AccountName,
 		})
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 			outputErrorMsg(w, http.StatusInternalServerError, "failed to request to shipment service")
 			tx.Rollback()
 
@@ -1587,7 +1587,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 			Price:  targetItem.Price,
 		})
 		if err != nil {
-			log.Print(err)
+			// log.Print(err)
 
 			outputErrorMsg(w, http.StatusInternalServerError, "payment service is failed")
 			tx.Rollback()
@@ -1628,7 +1628,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 		"",
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1673,7 +1673,7 @@ func postShip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 
 		return
@@ -1694,7 +1694,7 @@ func postShip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -1713,7 +1713,7 @@ func postShip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -1733,7 +1733,7 @@ func postShip(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -1743,7 +1743,7 @@ func postShip(w http.ResponseWriter, r *http.Request) {
 		ReserveID: shipping.ReserveID,
 	})
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "failed to request to shipment service")
 		tx.Rollback()
 
@@ -1757,7 +1757,7 @@ func postShip(w http.ResponseWriter, r *http.Request) {
 		transactionEvidence.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1804,7 +1804,7 @@ func postShipDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 
 		return
@@ -1825,7 +1825,7 @@ func postShipDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -1844,7 +1844,7 @@ func postShipDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -1864,7 +1864,7 @@ func postShipDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -1874,7 +1874,7 @@ func postShipDone(w http.ResponseWriter, r *http.Request) {
 		ReserveID: shipping.ReserveID,
 	})
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "failed to request to shipment service")
 		tx.Rollback()
 
@@ -1893,7 +1893,7 @@ func postShipDone(w http.ResponseWriter, r *http.Request) {
 		transactionEvidence.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1906,7 +1906,7 @@ func postShipDone(w http.ResponseWriter, r *http.Request) {
 		transactionEvidence.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -1950,7 +1950,7 @@ func postComplete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 
 		return
@@ -1970,7 +1970,7 @@ func postComplete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -1989,7 +1989,7 @@ func postComplete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -2004,7 +2004,7 @@ func postComplete(w http.ResponseWriter, r *http.Request) {
 	shipping := Shipping{}
 	err = tx.Get(&shipping, "SELECT * FROM `shippings` WHERE `transaction_evidence_id` = ? FOR UPDATE", transactionEvidence.ID)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -2014,7 +2014,7 @@ func postComplete(w http.ResponseWriter, r *http.Request) {
 		ReserveID: shipping.ReserveID,
 	})
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "failed to request to shipment service")
 		tx.Rollback()
 
@@ -2033,7 +2033,7 @@ func postComplete(w http.ResponseWriter, r *http.Request) {
 		transactionEvidence.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -2046,7 +2046,7 @@ func postComplete(w http.ResponseWriter, r *http.Request) {
 		transactionEvidence.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -2059,7 +2059,7 @@ func postComplete(w http.ResponseWriter, r *http.Request) {
 		itemID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
@@ -2081,7 +2081,7 @@ func postSell(w http.ResponseWriter, r *http.Request) {
 
 	f, header, err := r.FormFile("image")
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusBadRequest, "image error")
 		return
 	}
@@ -2118,7 +2118,7 @@ func postSell(w http.ResponseWriter, r *http.Request) {
 
 	category, flag := getCategoryMapById(categoryID)
 	if !flag || category.ParentID == 0 {
-		log.Print(categoryID, category)
+		// log.Print(categoryID, category)
 		outputErrorMsg(w, http.StatusBadRequest, "Incorrect category ID")
 		return
 	}
@@ -2131,7 +2131,7 @@ func postSell(w http.ResponseWriter, r *http.Request) {
 
 	img, err := ioutil.ReadAll(f)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "image error")
 		return
 	}
@@ -2150,7 +2150,7 @@ func postSell(w http.ResponseWriter, r *http.Request) {
 	imgName := fmt.Sprintf("%s%s", secureRandomStr(16), ext)
 	err = ioutil.WriteFile(fmt.Sprintf("../public/upload/%s", imgName), img, 0644)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "Saving image failed")
 		return
 	}
@@ -2165,7 +2165,7 @@ func postSell(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -2181,7 +2181,7 @@ func postSell(w http.ResponseWriter, r *http.Request) {
 		category.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
@@ -2189,7 +2189,7 @@ func postSell(w http.ResponseWriter, r *http.Request) {
 
 	itemID, err := result.LastInsertId()
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
@@ -2202,7 +2202,7 @@ func postSell(w http.ResponseWriter, r *http.Request) {
 		seller.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
@@ -2253,7 +2253,7 @@ func postBump(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -2273,7 +2273,7 @@ func postBump(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -2293,7 +2293,7 @@ func postBump(w http.ResponseWriter, r *http.Request) {
 		targetItem.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
@@ -2303,14 +2303,14 @@ func postBump(w http.ResponseWriter, r *http.Request) {
 		seller.ID,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
 
 	err = tx.Get(&targetItem, "SELECT * FROM `items` WHERE `id` = ?", itemID)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		tx.Rollback()
 		return
@@ -2344,7 +2344,7 @@ func getSettings(w http.ResponseWriter, r *http.Request) {
 
 	err := dbx.Select(&categories, "SELECT * FROM `categories`")
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
@@ -2378,7 +2378,7 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
@@ -2390,7 +2390,7 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "crypt error")
 		return
@@ -2401,7 +2401,7 @@ func postLogin(w http.ResponseWriter, r *http.Request) {
 	session.Values["user_id"] = u.ID
 	session.Values["csrf_token"] = secureRandomStr(20)
 	if err = session.Save(r, w); err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "session error")
 		return
@@ -2431,7 +2431,7 @@ func postRegister(w http.ResponseWriter, r *http.Request) {
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), BcryptCost)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "error")
 		return
@@ -2443,7 +2443,7 @@ func postRegister(w http.ResponseWriter, r *http.Request) {
 		address,
 	)
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
@@ -2452,7 +2452,7 @@ func postRegister(w http.ResponseWriter, r *http.Request) {
 	userID, err := result.LastInsertId()
 
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
@@ -2468,7 +2468,7 @@ func postRegister(w http.ResponseWriter, r *http.Request) {
 	session.Values["user_id"] = u.ID
 	session.Values["csrf_token"] = secureRandomStr(20)
 	if err = session.Save(r, w); err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "session error")
 		return
 	}
@@ -2481,7 +2481,7 @@ func getReports(w http.ResponseWriter, r *http.Request) {
 	transactionEvidences := make([]TransactionEvidence, 0)
 	err := dbx.Select(&transactionEvidences, "SELECT * FROM `transaction_evidences` WHERE `id` > 15007")
 	if err != nil {
-		log.Print(err)
+		// log.Print(err)
 		outputErrorMsg(w, http.StatusInternalServerError, "db error")
 		return
 	}
