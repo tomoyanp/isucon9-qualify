@@ -573,6 +573,9 @@ func initCategoryMap() {
 		categoryMap[category.ID], _ = getCategoryByIDInternal(dbx, category.ID)
 		parentCategories[category.ParentID] = append(parentCategories[category.ParentID], category.ID)
 	}
+
+	log.Print("******************* initCategoryMap() ********************")
+	log.Print(categoryMap)
 }
 
 func getCategoryMapById(id int) (Category, bool) {
@@ -733,7 +736,7 @@ func getNewItems(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// 1st page
-		baseQuery += "WHERE `items.status` IN (?,?) ORDER BY `items.created_at` DESC, `items.id` DESC LIMIT ?"
+		baseQuery += "WHERE items.status IN (?,?) ORDER BY items.created_at DESC, items.id DESC LIMIT ?"
 		err := dbx.Select(&userItems,
 			baseQuery,
 			ItemStatusOnSale,
