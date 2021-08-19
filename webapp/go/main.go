@@ -1642,7 +1642,7 @@ func postBuy(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resBuy{TransactionEvidenceID: transactionEvidenceID})
 }
 
-func shipmentCreate(buyer User, seller User, tx sqlx.Tx, w http.ResponseWriter, c chan *APIShipmentCreateRes) {
+func shipmentCreate(buyer User, seller User, tx *sqlx.Tx, w http.ResponseWriter, c chan *APIShipmentCreateRes) {
 	scr, err := APIShipmentCreate(getShipmentServiceURL(), &APIShipmentCreateReq{
 		ToAddress:   buyer.Address,
 		ToName:      buyer.AccountName,
@@ -1660,7 +1660,7 @@ func shipmentCreate(buyer User, seller User, tx sqlx.Tx, w http.ResponseWriter, 
 	c <- scr
 }
 
-func paymentToken(rb reqBuy, targetItem Item, tx sqlx.Tx, w http.ResponseWriter, c chan *APIPaymentServiceTokenRes) {
+func paymentToken(rb reqBuy, targetItem Item, tx *sqlx.Tx, w http.ResponseWriter, c chan *APIPaymentServiceTokenRes) {
 	pstr, err := APIPaymentToken(getPaymentServiceURL(), &APIPaymentServiceTokenReq{
 		ShopID: PaymentServiceIsucariShopID,
 		Token:  rb.Token,
