@@ -321,9 +321,11 @@ func init() {
 }
 
 func redisConnection() redis.Conn {
-	host := "172.31.8.4"
+	host := "172.31.8.4:6379"
+	dbNo := 1
+	opt := redis.DialDatabase(dbNo)
 
-	c, err := redis.Dial("tcp", host, 1)
+	c, err := redis.Dial("tcp", host, opt)
 
 	if err != nil {
 		panic(err)
@@ -332,7 +334,7 @@ func redisConnection() redis.Conn {
 	return c
 }
 
-var redisCon *redis.Conn
+var redisCon redis.Conn
 
 func main() {
 	host := os.Getenv("MYSQL_HOST")
@@ -378,6 +380,7 @@ func main() {
 	mux := goji.NewMux()
 
 	redisCon = redisConnection()
+	defer redisCon.Close()
 
 	// API
 	mux.HandleFunc(pat.Post("/initialize"), postInitialize)
@@ -575,17 +578,23 @@ func initCategoryMap() {
 
 	for _, category := range categories {
 		category, _ = getCategoryByIDInternal(dbx, category.ID)
-		redisCon.Do("SET", category.ID, json.Marshal(category))
+		serialized, _ := json.Marshal(category)
+		redisCon.Do("SET", category.ID, serialized)
 		parentCategories[category.ParentID] = append(parentCategories[category.ParentID], category.ID)
 	}
+	redisCon.Do("EXEC")
 }
 
 func getCategoryMapById(id int) (Category, bool) {
-	data, _ := redisCon.Bytes(redisCon.Do("GET", id))
-	flag := false
+	data, _ := redis.Bytes(redisCon.Do("GET", id))
+	var flag = false
 	deserialized := Category{}
+	log.Printf("id = %v", id)
+	log.Printf("get data = %v", data)
 	if data != nil {
-		json.Unmarshal(data, deserialized)
+		json.Unmarshal(data, &deserialized)
+		log.Printf("deserialized = %v", deserialized)
+		flag = true
 	}
 	return deserialized, flag
 }
